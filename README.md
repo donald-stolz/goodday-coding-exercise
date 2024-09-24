@@ -53,11 +53,24 @@ It's likely we won't complete every requirement, but let's get as far as we can 
 - Nest comes with [generators](https://docs.nestjs.com/recipes/crud-generator) to help you scaffold out your application. You can run `nx g @nx/nest:resource <name>` to generate a resource much of the boilerplate you need for purchase orders.
 
 ### To Start Exercise
- - Run `npm install --global nx@latest`
- - Run `npm install`
- - Run `npx prisma generate --schema apps/api/prisma/schema.prisma`
- - Run `nx run api:serve:development`
- - Run `nx run client:serve:development`
+Run the following commands to get the project going. `install:nx` is a one-time command that is only needed if you don't have NX installed yet.
+```
+npm run install:nx
+npm run setup
+npm run start
+```
+The application will be running at http://localhost:4200
+
+#### Additional details
+When coding it may be easier to run the API and client separately. You can start them independently with the following commands:
+```
+npm run start:api
+npm run start:client
+```
+
+Once both servers are running, you can access:
+- The API at: http://localhost:3100
+- The client application at: http://localhost:4200
 
 ### Schema
 Here is the schema we will use for this exercise.
