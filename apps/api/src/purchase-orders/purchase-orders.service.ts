@@ -22,7 +22,7 @@ export class PurchaseOrdersService {
   async findAll() {
     const purchaseOrders = await this.prisma.purchaseOrders.findMany({
       orderBy: {
-        expected_delivery_date: 'asc',
+        expected_delivery_date: 'desc',
       },
       select: {
         id: true,
@@ -54,10 +54,6 @@ export class PurchaseOrdersService {
         total_cost,
       };
     });
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} purchaseOrder`;
   }
 
   update(id: number, updatePurchaseOrderDto: UpdatePurchaseOrderDto) {

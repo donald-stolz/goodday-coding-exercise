@@ -11,7 +11,7 @@ import Select from '../../common/Select';
 interface PurchaseOrderFormProps {
   mode: 'new' | 'edit';
   initialData?: PurchaseOrder;
-  onSubmit: (data: PurchaseOrder | CreatePurchaseOrder) => void;
+  onSubmit: (data: Partial<PurchaseOrder> | CreatePurchaseOrder) => void;
   onCancel: () => void;
   isLoading?: boolean;
 }
@@ -74,19 +74,25 @@ const PurchaseOrderForm = ({
       !orderDate ||
       !expectedDeliveryDate ||
       lineItems.length === 0
-    )
+    ) {
       return;
-    onSubmit({
-      id: initialData?.id,
-      vendorName,
-      orderDate: new Date(orderDate),
-      expectedDeliveryDate: new Date(expectedDeliveryDate),
-      purchaseOrderLineItems: lineItems.map((li) => ({
-        itemId: Number(li.itemId),
-        quantity: Number(li.quantity),
-        unitCost: Number(li.unitCost),
-      })),
-    });
+    }
+    if (isEdit) {
+      const submissionData: Partial<PurchaseOrder> = {
+        id: initialData?.id,
+        expectedDeliveryDate: new Date(expectedDeliveryDate),
+        purchaseOrderLineItems: lineItems,
+      };
+      onSubmit(submissionData);
+    } else {
+      const submissionData: CreatePurchaseOrder = {
+        vendorName,
+        orderDate: new Date(orderDate),
+        expectedDeliveryDate: new Date(expectedDeliveryDate),
+        purchaseOrderLineItems: lineItems,
+      };
+      onSubmit(submissionData);
+    }
   };
 
   return (

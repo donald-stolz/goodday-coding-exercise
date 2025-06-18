@@ -30,11 +30,6 @@ export class PurchaseOrdersController {
     return this.purchaseOrdersService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.purchaseOrdersService.findOne(+id);
-  }
-
   @UseInterceptors(SnakeCaseInterceptor)
   @Patch(':id')
   update(

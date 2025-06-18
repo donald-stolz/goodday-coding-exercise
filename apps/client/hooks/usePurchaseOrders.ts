@@ -23,11 +23,15 @@ export const usePurchaseOrders = () => {
     mutate('purchase-orders');
   };
 
-  const updatePurchaseOrder = async (purchaseOrder: PurchaseOrder) => {
+  const updatePurchaseOrder = async (purchaseOrder: Partial<PurchaseOrder>) => {
     console.log('purchaseOrder', purchaseOrder);
+    // Get fields to update
     await fetcher(`purchase-orders/${purchaseOrder.id}`, {
       method: 'PATCH',
       body: JSON.stringify(purchaseOrder),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
     mutate('purchase-orders');
   };
