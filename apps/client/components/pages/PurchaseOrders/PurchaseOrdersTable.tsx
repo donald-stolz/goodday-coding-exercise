@@ -45,6 +45,17 @@ const columns = [
       </ul>
     ),
   },
+  {
+    header: 'Total Cost',
+    accessor: 'totalCost',
+    render: (po: PurchaseOrder) => {
+      const total = po.purchaseOrderLineItems.reduce(
+        (sum, item) => sum + item.quantity * item.unitCost,
+        0
+      );
+      return <span aria-label="Total Cost">${total.toFixed(2)}</span>;
+    },
+  },
 ];
 
 const PurchaseOrdersTable = ({ purchaseOrders }: PurchaseOrdersTableProps) => {

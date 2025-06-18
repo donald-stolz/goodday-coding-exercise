@@ -26,6 +26,7 @@ export interface PurchaseOrder {
   orderDate: Date;
   expectedDeliveryDate: Date;
   purchaseOrderLineItems: PurchaseOrderLineItem[];
+  totalCost: number;
 }
 
 export type CreatePurchaseOrder = Omit<
