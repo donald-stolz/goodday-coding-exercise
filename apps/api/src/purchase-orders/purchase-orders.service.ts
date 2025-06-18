@@ -18,6 +18,10 @@ export class PurchaseOrdersService {
       include: {
         purchase_order_line_items: true,
       },
+      // Order by earliest expected delivery date
+      orderBy: {
+        expected_delivery_date: 'asc',
+      },
     });
   }
 
