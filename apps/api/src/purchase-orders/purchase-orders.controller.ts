@@ -25,7 +25,6 @@ export class PurchaseOrdersController {
 
   @Get()
   findAll() {
-    console.log('findAll');
     return this.purchaseOrdersService.findAll();
   }
 

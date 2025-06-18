@@ -18,6 +18,8 @@ export interface PurchaseOrderLineItem {
   unitCost: number;
 }
 
+export type CreatePurchaseOrderLineItem = Omit<PurchaseOrderLineItem, 'id'>;
+
 export interface PurchaseOrder {
   id: number;
   vendorName: string;
@@ -25,3 +27,10 @@ export interface PurchaseOrder {
   expectedDeliveryDate: Date;
   purchaseOrderLineItems: PurchaseOrderLineItem[];
 }
+
+export type CreatePurchaseOrder = Omit<
+  PurchaseOrder,
+  'id' | 'purchaseOrderLineItems'
+> & {
+  purchaseOrderLineItems: CreatePurchaseOrderLineItem[];
+};

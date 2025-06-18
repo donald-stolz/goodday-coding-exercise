@@ -22,6 +22,7 @@ export class PurchaseOrdersService {
         id: true,
         vendor_name: true,
         expected_delivery_date: true,
+        order_date: true,
         purchase_order_line_items: {
           select: {
             id: true,

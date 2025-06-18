@@ -1,6 +1,6 @@
 'use client';
 import { usePurchaseOrders } from '../../hooks/usePurchaseOrders';
-import PurchaseOrdersTable from '../../components/pages/PurchaseOrdersTable';
+import PurchaseOrdersTable from '../../components/pages/PurchaseOrders/PurchaseOrdersTable';
 import Spinner from '../../components/common/Spinner';
 
 export default function Index() {

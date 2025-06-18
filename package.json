@@ -2,7 +2,7 @@
   "name": "@gddy-coding-exercise/source",
   "engines": {
     "npm": ">=8.0.0",
-    "node": ">=18.0.0"
+    "node": ">=19.0.0"
   },
   "version": "0.0.0",
   "license": "MIT",
@@ -28,6 +28,7 @@
     "next": "14.0.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-icons": "^5.5.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
     "save": "^2.9.0",
@@ -54,6 +55,7 @@
     "@types/node": "18.14.2",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
+    "@types/react-icons": "^2.2.7",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "autoprefixer": "^10.4.14",
