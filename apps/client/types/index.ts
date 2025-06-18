@@ -31,7 +31,7 @@ export interface PurchaseOrder {
 
 export type CreatePurchaseOrder = Omit<
   PurchaseOrder,
-  'id' | 'purchaseOrderLineItems'
+  'id' | 'purchaseOrderLineItems' | 'totalCost'
 > & {
   purchaseOrderLineItems: CreatePurchaseOrderLineItem[];
 };

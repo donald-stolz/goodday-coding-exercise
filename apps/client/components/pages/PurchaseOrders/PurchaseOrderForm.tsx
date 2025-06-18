@@ -5,6 +5,8 @@ import type {
   PurchaseOrder,
   PurchaseOrderLineItem,
 } from '../../../types';
+import { useItems } from '../../../hooks/useItems';
+import Select from '../../common/Select';
 
 interface PurchaseOrderFormProps {
   mode: 'new' | 'edit';
@@ -32,6 +34,8 @@ const PurchaseOrderForm = ({
   onCancel,
   isLoading,
 }: PurchaseOrderFormProps) => {
+  const isEdit = mode === 'edit';
+  const { items, isLoading: isItemsLoading } = useItems();
   const [vendorName, setVendorName] = useState(initialData?.vendorName || '');
   const [orderDate, setOrderDate] = useState(
     formatDateInput(initialData?.orderDate)
@@ -48,7 +52,7 @@ const PurchaseOrderForm = ({
   const handleLineItemChange = (
     idx: number,
     field: keyof PurchaseOrderLineItem,
-    value: any
+    value: number
   ) => {
     setLineItems((prev) =>
       prev.map((item, i) => (i === idx ? { ...item, [field]: value } : item))
@@ -101,7 +105,7 @@ const PurchaseOrderForm = ({
         type="text"
         value={vendorName}
         onChange={(e) => setVendorName(e.target.value)}
-        disabled={isLoading || mode === 'edit'}
+        disabled={isLoading || isEdit}
         required
       />
       <div className="flex gap-4">
@@ -112,7 +116,7 @@ const PurchaseOrderForm = ({
           value={orderDate}
           onChange={(e) => setOrderDate(e.target.value)}
           containerClassName="flex-1"
-          disabled={isLoading || mode === 'edit'}
+          disabled={isLoading || isEdit}
           required
         />
         <Input
@@ -131,20 +135,37 @@ const PurchaseOrderForm = ({
         <ul>
           {lineItems.map((item, idx) => {
             const isFirst = idx === 0;
+            const selectOptions = [
+              {
+                value: '',
+                label: isItemsLoading ? 'Loading items...' : 'Select item',
+              },
+              ...(items
+                ? items.map((option) => ({
+                    value: option.id,
+                    label: `${option.name} (${option.id})`,
+                  }))
+                : []),
+            ];
             return (
               <li key={item.id} className="flex gap-2 items-center mb-2 ">
-                <Input
-                  id={`itemId-${idx}`}
-                  label={isFirst ? 'Item ID' : ''}
-                  type="number"
-                  value={item.itemId}
-                  onChange={(e) =>
-                    handleLineItemChange(idx, 'itemId', Number(e.target.value))
-                  }
-                  required
-                  inputClassName="flex-1"
-                  disabled={isLoading}
-                />
+                <div className="flex-1">
+                  <Select
+                    id={`itemId-${idx}`}
+                    label={isFirst ? 'Item' : ''}
+                    value={item.itemId}
+                    onChange={(e) =>
+                      handleLineItemChange(
+                        idx,
+                        'itemId',
+                        Number(e.target.value)
+                      )
+                    }
+                    options={selectOptions}
+                    required
+                    disabled={isLoading || isItemsLoading || isEdit}
+                  />
+                </div>
                 <Input
                   id={`quantity-${idx}`}
                   label={isFirst ? 'Quantity' : ''}
