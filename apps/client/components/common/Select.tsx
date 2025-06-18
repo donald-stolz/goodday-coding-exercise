@@ -28,7 +28,6 @@ const Select: React.FC<SelectProps> = ({
   labelClassName = '',
   ...rest
 }) => {
-  console.log('disabled', disabled);
   return (
     <div className={`mb-4 ${containerClassName}`}>
       {label && (

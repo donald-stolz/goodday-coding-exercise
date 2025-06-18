@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { FaPencilAlt, FaPlusCircle } from 'react-icons/fa';
 import Modal from '../../common/Modal';
 import PurchaseOrderForm from './PurchaseOrderForm';
+import { usePurchaseOrders } from '../../../hooks/usePurchaseOrders';
 
 interface PurchaseOrdersTableProps {
   purchaseOrders: PurchaseOrder[];
@@ -59,6 +60,7 @@ const columns = [
 ];
 
 const PurchaseOrdersTable = ({ purchaseOrders }: PurchaseOrdersTableProps) => {
+  const { createPurchaseOrder, updatePurchaseOrder } = usePurchaseOrders();
   const [isLoading, setIsLoading] = useState(false);
   const [formState, setFormState] = useState<'edit' | 'create' | 'closed'>(
     'closed'
@@ -96,8 +98,19 @@ const PurchaseOrdersTable = ({ purchaseOrders }: PurchaseOrdersTableProps) => {
 
   const handleSubmit = async (data: PurchaseOrder | CreatePurchaseOrder) => {
     setIsLoading(true);
-    console.log('submit', data);
-    setIsLoading(false);
+    try {
+      if (formState === 'create') {
+        await createPurchaseOrder(data as CreatePurchaseOrder);
+      } else {
+        await updatePurchaseOrder(data as PurchaseOrder);
+      }
+      setFormState('closed');
+      setPurchaseOrderForm(null);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCancel = () => {

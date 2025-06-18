@@ -9,7 +9,7 @@ export const useParentItems = () => {
   );
 
   return {
-    parentItems: data,
+    parentItems: data ?? [],
     isLoading,
     error,
   };

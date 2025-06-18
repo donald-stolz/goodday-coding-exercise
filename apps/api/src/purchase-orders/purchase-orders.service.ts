@@ -8,8 +8,14 @@ export class PurchaseOrdersService {
   constructor(private prisma: PrismaService) {}
 
   async create(createPurchaseOrderDto: CreatePurchaseOrderDto) {
+    const { purchase_order_line_items, ...rest } = createPurchaseOrderDto;
     return this.prisma.purchaseOrders.create({
-      data: createPurchaseOrderDto,
+      data: {
+        ...rest,
+        purchase_order_line_items: {
+          create: purchase_order_line_items,
+        },
+      },
     });
   }
 
@@ -55,9 +61,18 @@ export class PurchaseOrdersService {
   }
 
   update(id: number, updatePurchaseOrderDto: UpdatePurchaseOrderDto) {
+    const { purchase_order_line_items, ...rest } = updatePurchaseOrderDto;
     return this.prisma.purchaseOrders.update({
       where: { id },
-      data: updatePurchaseOrderDto,
+      data: {
+        ...rest,
+        purchase_order_line_items: {
+          update: purchase_order_line_items.map((item) => ({
+            where: { id: item.id },
+            data: item,
+          })),
+        },
+      },
     });
   }
 

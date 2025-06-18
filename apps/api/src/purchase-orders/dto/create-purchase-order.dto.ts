@@ -1,8 +1,19 @@
 import { Prisma } from '@prisma/client';
-import { IsDateString, IsObject, IsString } from 'class-validator';
+import { IsArray, IsDateString, IsNumber, IsString } from 'class-validator';
 
+export class CreatePurchaseOrderLineItemDto {
+  @IsNumber()
+  item_id: number;
+
+  @IsNumber()
+  quantity: number;
+
+  @IsNumber()
+  unit_cost: number;
+}
 export class CreatePurchaseOrderDto
-  implements Prisma.PurchaseOrdersCreateInput
+  implements
+    Omit<Prisma.PurchaseOrdersCreateInput, 'purchase_order_line_items'>
 {
   @IsString()
   vendor_name: string;
@@ -14,6 +25,6 @@ export class CreatePurchaseOrderDto
   expected_delivery_date: Date;
 
   // TODO: Improve validation for create purchase_order_line_items type
-  @IsObject()
-  purchase_order_line_items: Prisma.PurchaseOrderLineItemsCreateNestedManyWithoutPurchase_orderInput;
+  @IsArray()
+  purchase_order_line_items: CreatePurchaseOrderLineItemDto[];
 }

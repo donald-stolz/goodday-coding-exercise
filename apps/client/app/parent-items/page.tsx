@@ -1,7 +1,7 @@
 'use client';
 import { useParentItems } from '../../hooks/useParentItems';
 import Spinner from '../../components/common/Spinner';
-import ParentItemsTable from '../../components/pages/ParentItemsTable';
+import ParentItemsTable from '../../components/pages/ParentItems/ParentItemsTable';
 
 export default function Index() {
   // TODO: Add error handling

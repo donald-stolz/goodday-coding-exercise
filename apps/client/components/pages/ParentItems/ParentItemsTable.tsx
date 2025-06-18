@@ -1,5 +1,5 @@
-import type { ParentItem, Item } from '../../types';
-import Table from '../common/Table';
+import type { ParentItem, Item } from '../../../types';
+import Table from '../../common/Table';
 
 interface ParentItemsTableProps {
   parentItems: ParentItem[];

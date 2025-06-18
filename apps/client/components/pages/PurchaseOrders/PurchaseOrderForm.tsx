@@ -82,7 +82,6 @@ const PurchaseOrderForm = ({
       orderDate: new Date(orderDate),
       expectedDeliveryDate: new Date(expectedDeliveryDate),
       purchaseOrderLineItems: lineItems.map((li) => ({
-        ...li,
         itemId: Number(li.itemId),
         quantity: Number(li.quantity),
         unitCost: Number(li.unitCost),
