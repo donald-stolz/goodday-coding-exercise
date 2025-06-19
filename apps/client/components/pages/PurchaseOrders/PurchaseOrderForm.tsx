@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Input from '../../common/Input';
 import type {
   CreatePurchaseOrder,
+  CreatePurchaseOrderLineItem,
   PurchaseOrder,
   PurchaseOrderLineItem,
 } from '../../../types';
@@ -16,9 +17,7 @@ interface PurchaseOrderFormProps {
   isLoading?: boolean;
 }
 
-const createEmptyLineItem = (): PurchaseOrderLineItem => ({
-  id: Date.now(),
-  purchaseOrderId: 0,
+const createEmptyLineItem = (): CreatePurchaseOrderLineItem => ({
   itemId: 0,
   quantity: 1,
   unitCost: 0,
@@ -43,7 +42,9 @@ const PurchaseOrderForm = ({
   const [expectedDeliveryDate, setExpectedDeliveryDate] = useState(
     formatDateInput(initialData?.expectedDeliveryDate)
   );
-  const [lineItems, setLineItems] = useState<PurchaseOrderLineItem[]>(
+  const [lineItems, setLineItems] = useState<
+    Array<PurchaseOrderLineItem | CreatePurchaseOrderLineItem>
+  >(
     initialData?.purchaseOrderLineItems?.length
       ? initialData.purchaseOrderLineItems
       : [createEmptyLineItem()]
@@ -81,7 +82,7 @@ const PurchaseOrderForm = ({
       const submissionData: Partial<PurchaseOrder> = {
         id: initialData?.id,
         expectedDeliveryDate: new Date(expectedDeliveryDate),
-        purchaseOrderLineItems: lineItems,
+        purchaseOrderLineItems: lineItems as PurchaseOrderLineItem[],
       };
       onSubmit(submissionData);
     } else {
@@ -153,7 +154,7 @@ const PurchaseOrderForm = ({
                 : []),
             ];
             return (
-              <li key={item.id} className="flex gap-2 items-center mb-2 ">
+              <li key={`item-${idx}`} className="flex gap-2 items-center mb-2 ">
                 <div className="flex-1">
                   <Select
                     id={`itemId-${idx}`}

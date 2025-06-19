@@ -23,7 +23,6 @@ export const usePurchaseOrders = () => {
   };
 
   const updatePurchaseOrder = async (purchaseOrder: Partial<PurchaseOrder>) => {
-    // Get fields to update
     await fetcher(`purchase-orders/${purchaseOrder.id}`, {
       method: 'PATCH',
       body: JSON.stringify(purchaseOrder),

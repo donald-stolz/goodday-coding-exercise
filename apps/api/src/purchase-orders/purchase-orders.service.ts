@@ -21,9 +21,6 @@ export class PurchaseOrdersService {
 
   async findAll() {
     const purchaseOrders = await this.prisma.purchaseOrders.findMany({
-      orderBy: {
-        expected_delivery_date: 'desc',
-      },
       select: {
         id: true,
         vendor_name: true,
@@ -39,21 +36,29 @@ export class PurchaseOrdersService {
         },
       },
     });
-    return purchaseOrders.map((purchaseOrder) => {
-      const total_quantity = purchaseOrder.purchase_order_line_items.reduce(
-        (acc, item) => acc + Number(item.quantity),
-        0
-      );
-      const total_cost = purchaseOrder.purchase_order_line_items.reduce(
-        (acc, item) => acc + Number(item.unit_cost) * Number(item.quantity),
-        0
-      );
-      return {
-        ...purchaseOrder,
-        total_quantity,
-        total_cost,
-      };
-    });
+    // NOTE: Issues with using orderBy in the query
+    return purchaseOrders
+      .map((purchaseOrder) => {
+        const total_quantity = purchaseOrder.purchase_order_line_items.reduce(
+          (acc, item) => acc + Number(item.quantity),
+          0
+        );
+        const total_cost = purchaseOrder.purchase_order_line_items.reduce(
+          (acc, item) => acc + Number(item.unit_cost) * Number(item.quantity),
+          0
+        );
+        return {
+          ...purchaseOrder,
+          total_quantity,
+          total_cost,
+        };
+      })
+      .sort((a, b) => {
+        return (
+          new Date(a.expected_delivery_date).getTime() -
+          new Date(b.expected_delivery_date).getTime()
+        );
+      });
   }
 
   update(id: number, updatePurchaseOrderDto: UpdatePurchaseOrderDto) {

@@ -1,5 +1,13 @@
 import { Prisma } from '@prisma/client';
-import { IsArray, IsDateString, IsNumber, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsDateString,
+  IsNumber,
+  IsString,
+  ValidateNested,
+  ArrayMinSize,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreatePurchaseOrderLineItemDto {
   @IsNumber()
@@ -24,7 +32,9 @@ export class CreatePurchaseOrderDto
   @IsDateString()
   expected_delivery_date: Date;
 
-  // TODO: Improve validation for create purchase_order_line_items type
   @IsArray()
+  @ValidateNested({ each: true })
+  @ArrayMinSize(1)
+  @Type(() => CreatePurchaseOrderLineItemDto)
   purchase_order_line_items: CreatePurchaseOrderLineItemDto[];
 }

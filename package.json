@@ -2,7 +2,7 @@
   "name": "@gddy-coding-exercise/source",
   "engines": {
     "npm": ">=8.0.0",
-    "node": ">=19.0.0"
+    "node": ">=18.0.0"
   },
   "version": "0.0.0",
   "license": "MIT",
@@ -32,7 +32,6 @@
     "react-icons": "^5.5.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
-    "save": "^2.9.0",
     "sqlite3": "^5.1.6",
     "swr": "^2.3.3",
     "tslib": "^2.3.0"

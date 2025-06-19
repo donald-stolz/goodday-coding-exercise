@@ -4,7 +4,6 @@ import Spinner from '../../components/common/Spinner';
 import ParentItemsTable from '../../components/pages/ParentItems/ParentItemsTable';
 
 export default function Index() {
-  // TODO: Add error handling
   const { parentItems, isLoading } = useParentItems();
 
   return (
