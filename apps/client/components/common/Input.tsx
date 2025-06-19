@@ -16,6 +16,7 @@ const Input: React.FC<InputProps> = ({
   onChange,
   placeholder,
   required,
+  disabled,
   containerClassName = '',
   inputClassName = '',
   labelClassName = '',
@@ -34,11 +35,12 @@ const Input: React.FC<InputProps> = ({
       <input
         id={id}
         type={type}
-        className={`h-10 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-base-300 ${inputClassName}`}
+        className={`h-10 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-base-300 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed ${inputClassName}`}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
         required={required}
+        disabled={disabled}
         aria-label={label}
         tabIndex={0}
         {...rest}
