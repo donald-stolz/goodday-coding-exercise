@@ -72,7 +72,6 @@ describe('PurchaseOrdersService', () => {
       prismaMock.purchaseOrders.findMany.mockResolvedValue(prismaResult as any);
       const result = await service.findAll();
       expect(prismaMock.purchaseOrders.findMany).toHaveBeenCalledWith({
-        orderBy: { expected_delivery_date: 'desc' },
         select: {
           id: true,
           vendor_name: true,
