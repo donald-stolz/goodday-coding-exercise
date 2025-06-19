@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Input from '../../common/Input';
+import DollarInput from '../../common/DollarInput';
 import type {
   CreatePurchaseOrder,
   CreatePurchaseOrderLineItem,
@@ -137,7 +138,7 @@ const PurchaseOrderForm = ({
         />
       </div>
       <div>
-        <label className="block font-medium mb-1">Line Items</label>
+        <span className="block font-medium mb-1 ">Line Items</span>
         <ul>
           {lineItems.map((item, idx) => {
             const isFirst = idx === 0;
@@ -154,24 +155,18 @@ const PurchaseOrderForm = ({
                 : []),
             ];
             return (
-              <li key={`item-${idx}`} className="flex gap-2 items-center mb-2 ">
-                <div className="flex-1">
-                  <Select
-                    id={`itemId-${idx}`}
-                    label={isFirst ? 'Item' : ''}
-                    value={item.itemId}
-                    onChange={(e) =>
-                      handleLineItemChange(
-                        idx,
-                        'itemId',
-                        Number(e.target.value)
-                      )
-                    }
-                    options={selectOptions}
-                    required
-                    disabled={isLoading || isItemsLoading || isEdit}
-                  />
-                </div>
+              <li key={`item-${idx}`} className="flex gap-2 items-end mb-2 ">
+                <Select
+                  id={`itemId-${idx}`}
+                  label={isFirst ? 'Item' : ''}
+                  value={item.itemId}
+                  onChange={(e) =>
+                    handleLineItemChange(idx, 'itemId', Number(e.target.value))
+                  }
+                  options={selectOptions}
+                  required
+                  disabled={isLoading || isItemsLoading || isEdit}
+                />
                 <Input
                   id={`quantity-${idx}`}
                   label={isFirst ? 'Quantity' : ''}
@@ -189,19 +184,12 @@ const PurchaseOrderForm = ({
                   inputClassName="w-20"
                   disabled={isLoading}
                 />
-                <Input
+                <DollarInput
                   id={`unitCost-${idx}`}
                   label={isFirst ? 'Unit Cost' : ''}
-                  type="number"
-                  min={0}
-                  step={0.01}
                   value={item.unitCost}
-                  onChange={(e) =>
-                    handleLineItemChange(
-                      idx,
-                      'unitCost',
-                      Number(e.target.value)
-                    )
+                  onChange={(val) =>
+                    handleLineItemChange(idx, 'unitCost', val === '' ? 0 : val)
                   }
                   required
                   inputClassName="w-28"
@@ -209,7 +197,7 @@ const PurchaseOrderForm = ({
                 />
                 <button
                   type="button"
-                  className="ml-2 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                  className="h-10 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
                   onClick={() => handleRemoveLineItem(idx)}
                   aria-label="Remove Line Item"
                   tabIndex={0}

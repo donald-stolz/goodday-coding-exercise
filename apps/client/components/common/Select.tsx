@@ -29,7 +29,7 @@ const Select: React.FC<SelectProps> = ({
   ...rest
 }) => {
   return (
-    <div className={`mb-4 ${containerClassName}`}>
+    <div className={` ${containerClassName}`}>
       {label && (
         <label
           htmlFor={id}
@@ -44,7 +44,7 @@ const Select: React.FC<SelectProps> = ({
         onChange={onChange}
         required={required}
         disabled={disabled}
-        className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${selectClassName}`}
+        className={`h-10 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-base-300 ${selectClassName}`}
         aria-label={label}
         tabIndex={0}
         {...rest}

@@ -9,6 +9,7 @@ import { FaPencilAlt, FaPlusCircle } from 'react-icons/fa';
 import Modal from '../../common/Modal';
 import PurchaseOrderForm from './PurchaseOrderForm';
 import { usePurchaseOrders } from '../../../hooks/usePurchaseOrders';
+import { useItems } from '../../../hooks/useItems';
 
 interface PurchaseOrdersTableProps {
   purchaseOrders: PurchaseOrder[];
@@ -30,37 +31,11 @@ const columns = [
     render: (po: PurchaseOrder) =>
       new Date(po.expectedDeliveryDate).toLocaleDateString(),
   },
-  {
-    header: 'Line Items',
-    accessor: 'purchaseOrderLineItems',
-    render: (po: PurchaseOrder) => (
-      <ul aria-label="Line Items">
-        {po.purchaseOrderLineItems.map((lineItem: PurchaseOrderLineItem) => (
-          <li key={lineItem.id} className="mb-1">
-            <span className="font-medium">Item ID:</span> {lineItem.itemId},
-            <span className="font-medium ml-2">Qty:</span> {lineItem.quantity},
-            <span className="font-medium ml-2">Unit Cost:</span> $
-            {lineItem.unitCost.toFixed(2)}
-          </li>
-        ))}
-      </ul>
-    ),
-  },
-  {
-    header: 'Total Cost',
-    accessor: 'totalCost',
-    render: (po: PurchaseOrder) => {
-      const total = po.purchaseOrderLineItems.reduce(
-        (sum, item) => sum + item.quantity * item.unitCost,
-        0
-      );
-      return <span aria-label="Total Cost">${total.toFixed(2)}</span>;
-    },
-  },
 ];
 
 const PurchaseOrdersTable = ({ purchaseOrders }: PurchaseOrdersTableProps) => {
   const { createPurchaseOrder, updatePurchaseOrder } = usePurchaseOrders();
+  const { items } = useItems();
   const [isLoading, setIsLoading] = useState(false);
   const [formState, setFormState] = useState<'edit' | 'create' | 'closed'>(
     'closed'
@@ -122,6 +97,37 @@ const PurchaseOrdersTable = ({ purchaseOrders }: PurchaseOrdersTableProps) => {
 
   const columnsWithEdit = [
     ...columns,
+    {
+      header: 'Line Items',
+      accessor: 'purchaseOrderLineItems',
+      render: (po: PurchaseOrder) => (
+        <ul aria-label="Line Items">
+          {po.purchaseOrderLineItems.map((lineItem: PurchaseOrderLineItem) => {
+            const item = items?.find((item) => item.id === lineItem.itemId);
+            return (
+              <li key={lineItem.id} className="mb-1">
+                <span className="font-medium">{item?.name}</span>,
+                <span className="font-medium ml-2">Qty:</span>{' '}
+                {lineItem.quantity},
+                <span className="font-medium ml-2">Unit Cost:</span> $
+                {lineItem.unitCost.toFixed(2)}
+              </li>
+            );
+          })}
+        </ul>
+      ),
+    },
+    {
+      header: 'Total Cost',
+      accessor: 'totalCost',
+      render: (po: PurchaseOrder) => {
+        const total = po.purchaseOrderLineItems.reduce(
+          (sum, item) => sum + item.quantity * item.unitCost,
+          0
+        );
+        return <span aria-label="Total Cost">${total.toFixed(2)}</span>;
+      },
+    },
     {
       header: 'Edit',
       accessor: 'edit',

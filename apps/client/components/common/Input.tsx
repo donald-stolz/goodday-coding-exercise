@@ -22,7 +22,7 @@ const Input: React.FC<InputProps> = ({
   ...rest
 }) => {
   return (
-    <div className={`mb-4 ${containerClassName}`}>
+    <div className={` ${containerClassName}`}>
       {label && (
         <label
           htmlFor={id}
@@ -34,7 +34,7 @@ const Input: React.FC<InputProps> = ({
       <input
         id={id}
         type={type}
-        className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${inputClassName}`}
+        className={`h-10 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-base-300 ${inputClassName}`}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
