@@ -11,7 +11,6 @@ export const usePurchaseOrders = () => {
   );
 
   const createPurchaseOrder = async (purchaseOrder: CreatePurchaseOrder) => {
-    console.log('purchase Order', purchaseOrder);
     await fetcher('purchase-orders', {
       method: 'POST',
       body: JSON.stringify(purchaseOrder),
