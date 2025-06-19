@@ -120,6 +120,7 @@ describe('PurchaseOrdersController', () => {
           { id: 1, item_id: 1, quantity: 2, unit_cost: new Decimal(10) },
         ],
       };
+      console.log('result', result);
       service.remove.mockResolvedValue(result);
       await expect(controller.remove(id)).resolves.toEqual(result);
       expect(service.remove).toHaveBeenCalledWith(+id);

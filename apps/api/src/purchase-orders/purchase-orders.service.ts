@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
 import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
 import { PrismaService } from '../prisma.service';
+import { PurchaseOrders } from '@prisma/client';
 
 @Injectable()
 export class PurchaseOrdersService {
@@ -77,9 +78,12 @@ export class PurchaseOrdersService {
     });
   }
 
-  remove(id: number) {
+  remove(id: number): Promise<PurchaseOrders> {
     return this.prisma.purchaseOrders.delete({
       where: { id },
+      include: {
+        purchase_order_line_items: true,
+      },
     });
   }
 }

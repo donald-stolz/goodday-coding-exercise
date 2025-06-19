@@ -137,11 +137,15 @@ describe('PurchaseOrdersService', () => {
         id,
         created_at: new Date('2024-01-01T00:00:00Z'),
         updated_at: new Date('2024-01-01T00:00:00Z'),
+        purchase_order_line_items: [],
       };
       prismaMock.purchaseOrders.delete.mockResolvedValue(prismaResult as any);
       const result = await service.remove(id);
       expect(prismaMock.purchaseOrders.delete).toHaveBeenCalledWith({
         where: { id },
+        include: {
+          purchase_order_line_items: true,
+        },
       });
       expect(result).toEqual(prismaResult);
     });
