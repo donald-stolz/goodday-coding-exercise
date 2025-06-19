@@ -96,13 +96,15 @@ const PurchaseOrdersTable = ({ purchaseOrders }: PurchaseOrdersTableProps) => {
     }
   };
 
-  const handleSubmit = async (data: PurchaseOrder | CreatePurchaseOrder) => {
+  const handleSubmit = async (
+    data: Partial<PurchaseOrder> | CreatePurchaseOrder
+  ) => {
     setIsLoading(true);
     try {
       if (formState === 'create') {
         await createPurchaseOrder(data as CreatePurchaseOrder);
       } else {
-        await updatePurchaseOrder(data as PurchaseOrder);
+        await updatePurchaseOrder(data as Partial<PurchaseOrder>);
       }
       setFormState('closed');
       setPurchaseOrderForm(null);

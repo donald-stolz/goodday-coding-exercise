@@ -26,11 +26,9 @@ const keysToSnakeCase = (data: unknown): unknown => {
 @Injectable()
 export class SnakeCaseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
-    console.log('SnakeCaseInterceptor');
     // Convert the request body to snake case before validation
     const request = context.switchToHttp().getRequest();
     const body = request.body;
-    console.log('body', body);
     request.body = keysToSnakeCase(body);
     return next.handle();
   }

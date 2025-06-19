@@ -4,7 +4,7 @@ import {
   ExecutionContext,
   CallHandler,
 } from '@nestjs/common';
-import { Decimal } from '@prisma/client/runtime';
+import { Decimal } from '@prisma/client/runtime/library';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 

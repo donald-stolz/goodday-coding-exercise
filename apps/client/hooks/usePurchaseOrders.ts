@@ -11,20 +11,18 @@ export const usePurchaseOrders = () => {
   );
 
   const createPurchaseOrder = async (purchaseOrder: CreatePurchaseOrder) => {
-    console.log('purchaseOrder', purchaseOrder);
-    const response = await fetcher('purchase-orders', {
+    console.log('purchase Order', purchaseOrder);
+    await fetcher('purchase-orders', {
       method: 'POST',
       body: JSON.stringify(purchaseOrder),
       headers: {
         'Content-Type': 'application/json',
       },
     });
-    console.log('response', response);
     mutate('purchase-orders');
   };
 
   const updatePurchaseOrder = async (purchaseOrder: Partial<PurchaseOrder>) => {
-    console.log('purchaseOrder', purchaseOrder);
     // Get fields to update
     await fetcher(`purchase-orders/${purchaseOrder.id}`, {
       method: 'PATCH',
