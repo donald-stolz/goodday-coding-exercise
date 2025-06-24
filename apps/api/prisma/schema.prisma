@@ -48,10 +48,12 @@ model PurchaseOrderLineItems {
 model PurchaseOrders {
   id                     Int       @id @default(autoincrement())
   vendor_name            String
+  vendor_email           String
   order_date             DateTime
   expected_delivery_date DateTime
   created_at             DateTime?
   updated_at             DateTime?
+  status                 String @default("new")
 
   purchase_order_line_items PurchaseOrderLineItems[]
 
