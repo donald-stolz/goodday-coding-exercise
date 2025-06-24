@@ -37,6 +37,9 @@ const PurchaseOrderForm = ({
   const isEdit = mode === 'edit';
   const { items, isLoading: isItemsLoading } = useItems();
   const [vendorName, setVendorName] = useState(initialData?.vendorName || '');
+  const [vendorEmail, setVendorEmail] = useState(
+    initialData?.vendorEmail || ''
+  );
   const [orderDate, setOrderDate] = useState(
     formatDateInput(initialData?.orderDate)
   );
@@ -89,6 +92,7 @@ const PurchaseOrderForm = ({
     } else {
       const submissionData: CreatePurchaseOrder = {
         vendorName,
+        vendorEmail,
         orderDate: new Date(orderDate),
         expectedDeliveryDate: new Date(expectedDeliveryDate),
         purchaseOrderLineItems: lineItems,
@@ -112,6 +116,16 @@ const PurchaseOrderForm = ({
         type="text"
         value={vendorName}
         onChange={(e) => setVendorName(e.target.value)}
+        disabled={isLoading || isEdit}
+        required
+      />
+      <Input
+        id="vendorEmail"
+        label="Vendor Email"
+        type="email"
+        // TODO: add validation for email
+        value={vendorEmail}
+        onChange={(e) => setVendorEmail(e.target.value)}
         disabled={isLoading || isEdit}
         required
       />

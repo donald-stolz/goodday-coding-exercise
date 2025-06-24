@@ -26,6 +26,7 @@ export type CreatePurchaseOrderLineItem = Omit<
 export interface PurchaseOrder {
   id: number;
   vendorName: string;
+  vendorEmail: string;
   orderDate: Date;
   expectedDeliveryDate: Date;
   purchaseOrderLineItems: PurchaseOrderLineItem[];

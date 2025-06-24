@@ -26,6 +26,9 @@ export class CreatePurchaseOrderDto
   @IsString()
   vendor_name: string;
 
+  @IsString()
+  vendor_email: string;
+
   @IsDateString()
   order_date: Date;
 
