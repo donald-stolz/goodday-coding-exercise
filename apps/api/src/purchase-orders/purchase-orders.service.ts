@@ -1,16 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
 import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
 import { PrismaService } from '../prisma.service';
 import { PurchaseOrders } from '@prisma/client';
+import { GCPubSubClient } from 'nestjs-google-pubsub-microservice';
 
 @Injectable()
-export class PurchaseOrdersService {
-  constructor(private prisma: PrismaService) {}
+export class PurchaseOrdersService implements OnApplicationShutdown {
+  private readonly pubsubClient: GCPubSubClient;
+  constructor(private prisma: PrismaService) {
+    this.pubsubClient = new GCPubSubClient({
+      client: { projectId: 'goodday-exercise' },
+    });
+  }
+
+  public publishPurchaseOrderUpdate(purchaseOrder: PurchaseOrders) {
+    this.pubsubClient.emit('purchase-orders', purchaseOrder);
+  }
 
   async create(createPurchaseOrderDto: CreatePurchaseOrderDto) {
     const { purchase_order_line_items, ...rest } = createPurchaseOrderDto;
-    return this.prisma.purchaseOrders.create({
+    const purchaseOrder = await this.prisma.purchaseOrders.create({
       data: {
         ...rest,
         purchase_order_line_items: {
@@ -18,6 +28,8 @@ export class PurchaseOrdersService {
         },
       },
     });
+    this.publishPurchaseOrderUpdate(purchaseOrder);
+    return purchaseOrder;
   }
 
   async findAll() {
@@ -62,9 +74,10 @@ export class PurchaseOrdersService {
       });
   }
 
-  update(id: number, updatePurchaseOrderDto: UpdatePurchaseOrderDto) {
+  async update(id: number, updatePurchaseOrderDto: UpdatePurchaseOrderDto) {
     const { purchase_order_line_items, ...rest } = updatePurchaseOrderDto;
-    return this.prisma.purchaseOrders.update({
+    // FIXME: line items are not being properly removed
+    const purchaseOrder = await this.prisma.purchaseOrders.update({
       where: { id },
       data: {
         ...rest,
@@ -76,6 +89,8 @@ export class PurchaseOrdersService {
         },
       },
     });
+    this.publishPurchaseOrderUpdate(purchaseOrder);
+    return purchaseOrder;
   }
 
   remove(id: number): Promise<PurchaseOrders> {
@@ -85,5 +100,9 @@ export class PurchaseOrdersService {
         purchase_order_line_items: true,
       },
     });
+  }
+
+  onApplicationShutdown() {
+    this.pubsubClient.close();
   }
 }
