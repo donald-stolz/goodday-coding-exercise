@@ -25,6 +25,7 @@ async function bootstrap() {
       client: {
         projectId: 'goodday-exercise',
       },
+      init: false,
     }),
   });
 

@@ -11,11 +11,11 @@ export class PurchaseOrdersService implements OnApplicationShutdown {
   constructor(private prisma: PrismaService) {
     this.pubsubClient = new GCPubSubClient({
       client: { projectId: 'goodday-exercise' },
+      topic: 'purchase-orders-topic',
+      subscription: 'purchase-orders-subscription',
+      init: false,
+      checkExistence: true,
     });
-  }
-
-  public publishPurchaseOrderUpdate(purchaseOrder: PurchaseOrders) {
-    this.pubsubClient.emit('purchase-orders', purchaseOrder);
   }
 
   async create(createPurchaseOrderDto: CreatePurchaseOrderDto) {
@@ -28,7 +28,7 @@ export class PurchaseOrdersService implements OnApplicationShutdown {
         },
       },
     });
-    this.publishPurchaseOrderUpdate(purchaseOrder);
+    this.pubsubClient.emit('purchase-order-created', purchaseOrder);
     return purchaseOrder;
   }
 
@@ -37,8 +37,10 @@ export class PurchaseOrdersService implements OnApplicationShutdown {
       select: {
         id: true,
         vendor_name: true,
+        vendor_email: true,
         expected_delivery_date: true,
         order_date: true,
+        status: true,
         purchase_order_line_items: {
           select: {
             id: true,
@@ -89,7 +91,7 @@ export class PurchaseOrdersService implements OnApplicationShutdown {
         },
       },
     });
-    this.publishPurchaseOrderUpdate(purchaseOrder);
+    this.pubsubClient.emit('purchase-order-updated', purchaseOrder);
     return purchaseOrder;
   }
 

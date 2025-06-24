@@ -13,8 +13,6 @@ import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
 import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
 import { CamelCaseInterceptor } from '../interceptors/camel-case.interceptor';
 import { SnakeCaseInterceptor } from '../interceptors/snake-case.interceptor';
-import { Ctx, MessagePattern } from '@nestjs/microservices';
-import { GCPubSubContext } from 'nestjs-google-pubsub-microservice';
 
 @Controller('purchase-orders')
 @UseInterceptors(CamelCaseInterceptor)
@@ -44,12 +42,5 @@ export class PurchaseOrdersController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.purchaseOrdersService.remove(+id);
-  }
-
-  @MessagePattern('purchase-orders')
-  async handlePurchaseOrder(data: any, @Ctx() context: GCPubSubContext) {
-    console.log(data);
-    const originalMsg = context.getMessage();
-    originalMsg.ack();
   }
 }
