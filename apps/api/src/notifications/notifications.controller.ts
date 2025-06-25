@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { Ctx, EventPattern, Payload } from '@nestjs/microservices';
 import { NotificationsService } from './notifications.service';
 import { GCPubSubContext } from 'nestjs-google-pubsub-microservice';
-import { PurchaseOrders } from '@prisma/client';
+import { PurchaseOrderWithLineItems } from '../purchase-orders/purchase-orders.constants';
 
 @Controller()
 export class NotificationsController {
@@ -15,23 +15,19 @@ export class NotificationsController {
 
   @EventPattern('purchase-order-created')
   async handlePurchaseOrderCreated(
-    @Payload() data: PurchaseOrders,
+    @Payload() id: number,
     @Ctx() context: GCPubSubContext
   ) {
-    console.log('purchase-orders - pubsub test');
-    console.log(data);
-
+    await this.notificationsService.sendPurchaseOrderCreatedNotification(id);
     this.successAck(context);
   }
 
   @EventPattern('purchase-order-updated')
   async handlePurchaseOrderUpdated(
-    @Payload() data: PurchaseOrders,
+    @Payload() id: number,
     @Ctx() context: GCPubSubContext
   ) {
-    console.log('purchase-orders - pubsub test');
-    console.log(data);
-
+    await this.notificationsService.sendPurchaseOrderUpdatedNotification(id);
     this.successAck(context);
   }
 }

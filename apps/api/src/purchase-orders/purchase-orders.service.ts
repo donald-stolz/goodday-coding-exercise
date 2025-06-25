@@ -4,6 +4,7 @@ import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
 import { PrismaService } from '../prisma.service';
 import { PurchaseOrders } from '@prisma/client';
 import { GCPubSubClient } from 'nestjs-google-pubsub-microservice';
+import { purchaseOrderSelect } from './purchase-orders.constants';
 
 @Injectable()
 export class PurchaseOrdersService implements OnApplicationShutdown {
@@ -27,29 +28,23 @@ export class PurchaseOrdersService implements OnApplicationShutdown {
           create: purchase_order_line_items,
         },
       },
+      select: purchaseOrderSelect,
     });
-    this.pubsubClient.emit('purchase-order-created', purchaseOrder);
+    this.pubsubClient.emit('purchase-order-created', purchaseOrder.id);
+    return purchaseOrder;
+  }
+
+  async findOne(id: number) {
+    const purchaseOrder = await this.prisma.purchaseOrders.findUnique({
+      where: { id },
+      select: purchaseOrderSelect,
+    });
     return purchaseOrder;
   }
 
   async findAll() {
     const purchaseOrders = await this.prisma.purchaseOrders.findMany({
-      select: {
-        id: true,
-        vendor_name: true,
-        vendor_email: true,
-        expected_delivery_date: true,
-        order_date: true,
-        status: true,
-        purchase_order_line_items: {
-          select: {
-            id: true,
-            quantity: true,
-            unit_cost: true,
-            item_id: true,
-          },
-        },
-      },
+      select: purchaseOrderSelect,
     });
     // NOTE: Issues with using orderBy in the query
     return purchaseOrders
@@ -90,8 +85,9 @@ export class PurchaseOrdersService implements OnApplicationShutdown {
           })),
         },
       },
+      select: purchaseOrderSelect,
     });
-    this.pubsubClient.emit('purchase-order-updated', purchaseOrder);
+    this.pubsubClient.emit('purchase-order-updated', id);
     return purchaseOrder;
   }
 

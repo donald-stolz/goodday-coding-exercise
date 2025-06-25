@@ -5,6 +5,14 @@ import { PrismaService } from '../prisma.service';
 export class ItemsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async findWhereIn(ids: number[]) {
+    return this.prisma.item.findMany({
+      where: {
+        id: { in: ids },
+      },
+    });
+  }
+
   findAll() {
     return this.prisma.item.findMany();
   }
