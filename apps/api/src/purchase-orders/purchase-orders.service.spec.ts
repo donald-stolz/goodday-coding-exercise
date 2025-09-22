@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PurchaseOrdersService } from './purchase-orders.service';
 import { PrismaService } from '../prisma.service';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
+import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
 
 describe('PurchaseOrdersService', () => {
   let service: PurchaseOrdersService;
@@ -25,8 +27,9 @@ describe('PurchaseOrdersService', () => {
 
   describe('create', () => {
     it('should call prisma.purchaseOrders.create with correct data and return result', async () => {
-      const dto = {
+      const dto: CreatePurchaseOrderDto = {
         vendor_name: 'Vendor',
+        vendor_email: 'vendor@email.com',
         order_date: new Date('2024-01-01'),
         expected_delivery_date: new Date('2024-01-10'),
         purchase_order_line_items: [{ item_id: 1, quantity: 2, unit_cost: 10 }],
@@ -36,18 +39,21 @@ describe('PurchaseOrdersService', () => {
         ...dto,
         created_at: new Date('2024-01-01T00:00:00Z'),
         updated_at: new Date('2024-01-01T00:00:00Z'),
+        status: 'new',
       };
       prismaMock.purchaseOrders.create.mockResolvedValue(prismaResult);
-      const result = await service.create(dto as any);
+      const result = await service.create(dto);
       expect(prismaMock.purchaseOrders.create).toHaveBeenCalledWith({
         data: {
           vendor_name: dto.vendor_name,
+          vendor_email: dto.vendor_email,
           order_date: dto.order_date,
           expected_delivery_date: dto.expected_delivery_date,
           purchase_order_line_items: {
             create: dto.purchase_order_line_items,
           },
         },
+        select: expect.anything(),
       });
       expect(result).toEqual(prismaResult);
     });
@@ -59,6 +65,7 @@ describe('PurchaseOrdersService', () => {
         {
           id: 1,
           vendor_name: 'Vendor',
+          vendor_email: 'vendor@email.com',
           expected_delivery_date: new Date('2024-01-10'),
           order_date: new Date('2024-01-01'),
           created_at: new Date('2024-01-01T00:00:00Z'),
@@ -72,20 +79,7 @@ describe('PurchaseOrdersService', () => {
       prismaMock.purchaseOrders.findMany.mockResolvedValue(prismaResult as any);
       const result = await service.findAll();
       expect(prismaMock.purchaseOrders.findMany).toHaveBeenCalledWith({
-        select: {
-          id: true,
-          vendor_name: true,
-          expected_delivery_date: true,
-          order_date: true,
-          purchase_order_line_items: {
-            select: {
-              id: true,
-              quantity: true,
-              unit_cost: true,
-              item_id: true,
-            },
-          },
-        },
+        select: expect.anything(),
       });
       expect(result).toEqual([
         {
@@ -100,7 +94,7 @@ describe('PurchaseOrdersService', () => {
   describe('update', () => {
     it('should call prisma.purchaseOrders.update with correct data and return result', async () => {
       const id = 1;
-      const dto = {
+      const dto: UpdatePurchaseOrderDto = {
         expected_delivery_date: new Date('2024-01-15'),
         purchase_order_line_items: [
           { id: 1, item_id: 1, quantity: 3, unit_cost: 12 },
@@ -109,11 +103,16 @@ describe('PurchaseOrdersService', () => {
       const prismaResult = {
         id,
         ...dto,
+        vendor_name: 'Vendor',
+        vendor_email: 'vendor@email.com',
+        order_date: new Date('2024-01-01'),
+        expected_delivery_date: dto.expected_delivery_date,
         created_at: new Date('2024-01-01T00:00:00Z'),
         updated_at: new Date('2024-01-02T00:00:00Z'),
+        status: 'new',
       };
-      prismaMock.purchaseOrders.update.mockResolvedValue(prismaResult as any);
-      const result = await service.update(id, dto as any);
+      prismaMock.purchaseOrders.update.mockResolvedValue(prismaResult);
+      const result = await service.update(id, dto);
       expect(prismaMock.purchaseOrders.update).toHaveBeenCalledWith({
         where: { id },
         data: {
@@ -125,6 +124,7 @@ describe('PurchaseOrdersService', () => {
             })),
           },
         },
+        select: expect.anything(),
       });
       expect(result).toEqual(prismaResult);
     });

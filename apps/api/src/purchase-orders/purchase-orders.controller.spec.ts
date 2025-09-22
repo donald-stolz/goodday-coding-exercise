@@ -38,6 +38,7 @@ describe('PurchaseOrdersController', () => {
     it('should call service.create with correct DTO and return result', async () => {
       const dto: CreatePurchaseOrderDto = {
         vendor_name: 'Vendor',
+        vendor_email: 'vendor@email.com',
         order_date: new Date('2024-01-01'),
         expected_delivery_date: new Date('2024-01-10'),
         purchase_order_line_items: [{ item_id: 1, quantity: 2, unit_cost: 10 }],
@@ -45,11 +46,15 @@ describe('PurchaseOrdersController', () => {
       const result = {
         id: 1,
         vendor_name: dto.vendor_name,
+        vendor_email: dto.vendor_email,
         order_date: dto.order_date,
         expected_delivery_date: dto.expected_delivery_date,
         created_at: new Date('2024-01-01T00:00:00Z'),
         updated_at: new Date('2024-01-01T00:00:00Z'),
-        purchase_order_line_items: dto.purchase_order_line_items,
+        purchase_order_line_items: [
+          { id: 1, item_id: 1, quantity: 2, unit_cost: new Decimal(10) },
+        ],
+        status: 'new',
       };
       service.create.mockResolvedValue(result);
       await expect(controller.create(dto)).resolves.toEqual(result);
@@ -63,6 +68,7 @@ describe('PurchaseOrdersController', () => {
         {
           id: 1,
           vendor_name: 'Vendor',
+          vendor_email: 'vendor@email.com',
           order_date: new Date('2024-01-01'),
           expected_delivery_date: new Date('2024-01-10'),
           created_at: new Date('2024-01-01T00:00:00Z'),
@@ -72,6 +78,7 @@ describe('PurchaseOrdersController', () => {
           ],
           total_quantity: 2,
           total_cost: 20,
+          status: 'new',
         },
       ];
       service.findAll.mockResolvedValue(result);
@@ -92,6 +99,7 @@ describe('PurchaseOrdersController', () => {
       const result = {
         id: 1,
         vendor_name: 'Vendor',
+        vendor_email: 'vendor@email.com',
         order_date: new Date('2024-01-01'),
         expected_delivery_date: dto.expected_delivery_date,
         created_at: new Date('2024-01-01T00:00:00Z'),
@@ -99,6 +107,7 @@ describe('PurchaseOrdersController', () => {
         purchase_order_line_items: [
           { id: 1, item_id: 1, quantity: 3, unit_cost: new Decimal(12) },
         ],
+        status: 'new',
       };
       service.update.mockResolvedValue(result);
       await expect(controller.update(id, dto)).resolves.toEqual(result);
@@ -112,6 +121,7 @@ describe('PurchaseOrdersController', () => {
       const result = {
         id: 1,
         vendor_name: 'Vendor',
+        vendor_email: 'vendor@email.com',
         order_date: new Date('2024-01-01'),
         expected_delivery_date: new Date('2024-01-10'),
         created_at: new Date('2024-01-01T00:00:00Z'),
@@ -119,8 +129,8 @@ describe('PurchaseOrdersController', () => {
         purchase_order_line_items: [
           { id: 1, item_id: 1, quantity: 2, unit_cost: new Decimal(10) },
         ],
+        status: 'new',
       };
-      console.log('result', result);
       service.remove.mockResolvedValue(result);
       await expect(controller.remove(id)).resolves.toEqual(result);
       expect(service.remove).toHaveBeenCalledWith(+id);

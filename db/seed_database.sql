@@ -33,17 +33,19 @@ VALUES (1, 'Red shirt', 'sh-1', 10.00, 10),
 DROP TABLE IF EXISTS purchase_orders;
 CREATE TABLE purchase_orders
 (
-  `id`                     INTEGER PRIMARY KEY AUTOINCREMENT,
-  `vendor_name`            VARCHAR(255) NOT NULL,
-  `order_date`             DATETIME NOT NULL,
-  `expected_delivery_date` DATETIME NOT NULL,
-  `created_at`             TIMESTAMP NULL,
-  `updated_at`             TIMESTAMP NULL
+    `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    `vendor_name` TEXT NOT NULL,
+    `vendor_email` TEXT NOT NULL,
+    `order_date` DATETIME NOT NULL,
+    `expected_delivery_date` DATETIME NOT NULL,
+    `created_at` DATETIME,
+    `updated_at` DATETIME,
+    `status` TEXT NOT NULL DEFAULT 'new'
 );
-INSERT INTO purchase_orders (`vendor_name`, `order_date`, `expected_delivery_date`)
-VALUES ('Levis', '2023-01-01 12:00:00', '2023-03-10 12:00:00'),
-       ('Bonobos', '2023-02-01 12:00:00', '2023-04-10 12:00:00'),
-       ('Scotch and Soda', '2023-03-01 12:00:00', '2023-05-10 12:00:00');
+INSERT INTO purchase_orders (`vendor_name`, `vendor_email`, `order_date`, `expected_delivery_date`)
+VALUES ('Levis', 'levis@gmail.com', '2023-01-01 12:00:00', '2023-03-10 12:00:00'),
+       ('Bonobos', 'bonobos@gmail.com', '2023-02-01 12:00:00', '2023-04-10 12:00:00'),
+       ('Scotch and Soda', 'scotchandsoda@gmail.com', '2023-03-01 12:00:00', '2023-05-10 12:00:00');
 
 DROP TABLE IF EXISTS purchase_order_line_items;
 CREATE TABLE purchase_order_line_items

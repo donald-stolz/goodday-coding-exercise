@@ -1,41 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
 import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
 import { PrismaService } from '../prisma.service';
 import { PurchaseOrders } from '@prisma/client';
+import { GCPubSubClient } from 'nestjs-google-pubsub-microservice';
+import { purchaseOrderSelect } from './purchase-orders.constants';
 
 @Injectable()
-export class PurchaseOrdersService {
-  constructor(private prisma: PrismaService) {}
+export class PurchaseOrdersService implements OnApplicationShutdown {
+  private readonly pubsubClient: GCPubSubClient;
+  constructor(private prisma: PrismaService) {
+    this.pubsubClient = new GCPubSubClient({
+      client: { projectId: 'goodday-exercise' },
+      topic: 'purchase-orders-topic',
+      subscription: 'purchase-orders-subscription',
+      init: false,
+      checkExistence: true,
+    });
+  }
 
   async create(createPurchaseOrderDto: CreatePurchaseOrderDto) {
     const { purchase_order_line_items, ...rest } = createPurchaseOrderDto;
-    return this.prisma.purchaseOrders.create({
+    const purchaseOrder = await this.prisma.purchaseOrders.create({
       data: {
         ...rest,
         purchase_order_line_items: {
           create: purchase_order_line_items,
         },
       },
+      select: purchaseOrderSelect,
     });
+    this.pubsubClient.emit('purchase-order-created', purchaseOrder.id);
+    return purchaseOrder;
+  }
+
+  async findOne(id: number) {
+    const purchaseOrder = await this.prisma.purchaseOrders.findUnique({
+      where: { id },
+      select: purchaseOrderSelect,
+    });
+    return purchaseOrder;
   }
 
   async findAll() {
     const purchaseOrders = await this.prisma.purchaseOrders.findMany({
-      select: {
-        id: true,
-        vendor_name: true,
-        expected_delivery_date: true,
-        order_date: true,
-        purchase_order_line_items: {
-          select: {
-            id: true,
-            quantity: true,
-            unit_cost: true,
-            item_id: true,
-          },
-        },
-      },
+      select: purchaseOrderSelect,
     });
     // NOTE: Issues with using orderBy in the query
     return purchaseOrders
@@ -62,9 +71,10 @@ export class PurchaseOrdersService {
       });
   }
 
-  update(id: number, updatePurchaseOrderDto: UpdatePurchaseOrderDto) {
+  async update(id: number, updatePurchaseOrderDto: UpdatePurchaseOrderDto) {
     const { purchase_order_line_items, ...rest } = updatePurchaseOrderDto;
-    return this.prisma.purchaseOrders.update({
+    // FIXME: line items are not being properly removed
+    const purchaseOrder = await this.prisma.purchaseOrders.update({
       where: { id },
       data: {
         ...rest,
@@ -75,7 +85,10 @@ export class PurchaseOrdersService {
           })),
         },
       },
+      select: purchaseOrderSelect,
     });
+    this.pubsubClient.emit('purchase-order-updated', id);
+    return purchaseOrder;
   }
 
   remove(id: number): Promise<PurchaseOrders> {
@@ -85,5 +98,9 @@ export class PurchaseOrdersService {
         purchase_order_line_items: true,
       },
     });
+  }
+
+  onApplicationShutdown() {
+    this.pubsubClient.close();
   }
 }

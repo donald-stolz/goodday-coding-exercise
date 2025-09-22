@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Input from '../../common/Input';
 import DollarInput from '../../common/DollarInput';
 import type {
@@ -37,6 +37,9 @@ const PurchaseOrderForm = ({
   const isEdit = mode === 'edit';
   const { items, isLoading: isItemsLoading } = useItems();
   const [vendorName, setVendorName] = useState(initialData?.vendorName || '');
+  const [vendorEmail, setVendorEmail] = useState(
+    initialData?.vendorEmail || ''
+  );
   const [orderDate, setOrderDate] = useState(
     formatDateInput(initialData?.orderDate)
   );
@@ -50,6 +53,9 @@ const PurchaseOrderForm = ({
       ? initialData.purchaseOrderLineItems
       : [createEmptyLineItem()]
   );
+  const [isFormValid, setIsFormValid] = useState(true);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [touched, setTouched] = useState<{ [key: string]: boolean }>({});
 
   const handleLineItemChange = (
     idx: number,
@@ -67,6 +73,26 @@ const PurchaseOrderForm = ({
 
   const handleRemoveLineItem = (idx: number) => {
     setLineItems((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleInputChange =
+    (handler: (e: any) => void, name: string) => (e: any) => {
+      handler(e);
+      if (formRef.current) {
+        setIsFormValid(formRef.current.checkValidity());
+      }
+      setTouched((prev) => ({ ...prev, [name]: true }));
+    };
+
+  const getInputError = (name: string) => {
+    if (!touched[name] || !formRef.current) return '';
+    const input = formRef.current.elements.namedItem(
+      name
+    ) as HTMLInputElement | null;
+    if (!input) return '';
+    if (input.validity.valid) return '';
+    if (input.validity.valueMissing) return 'This field is required.';
+    return input.validationMessage;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -89,6 +115,7 @@ const PurchaseOrderForm = ({
     } else {
       const submissionData: CreatePurchaseOrder = {
         vendorName,
+        vendorEmail,
         orderDate: new Date(orderDate),
         expectedDeliveryDate: new Date(expectedDeliveryDate),
         purchaseOrderLineItems: lineItems,
@@ -99,6 +126,7 @@ const PurchaseOrderForm = ({
 
   return (
     <form
+      ref={formRef}
       onSubmit={handleSubmit}
       className="space-y-6"
       aria-label="Purchase Order Form"
@@ -111,9 +139,30 @@ const PurchaseOrderForm = ({
         label="Vendor Name"
         type="text"
         value={vendorName}
-        onChange={(e) => setVendorName(e.target.value)}
+        name="vendorName"
+        onChange={handleInputChange(
+          (e) => setVendorName(e.target.value),
+          'vendorName'
+        )}
         disabled={isLoading || isEdit}
         required
+        error={getInputError('vendorName')}
+      />
+      <Input
+        id="vendorEmail"
+        label="Vendor Email"
+        type="email"
+        value={vendorEmail}
+        name="vendorEmail"
+        onChange={handleInputChange(
+          (e) => setVendorEmail(e.target.value),
+          'vendorEmail'
+        )}
+        disabled={isLoading || isEdit}
+        required
+        pattern="^[\w-.]+@([\w-]+\.)+[\w-]{2,}$"
+        title="Please enter a valid email address."
+        error={getInputError('vendorEmail')}
       />
       <div className="flex gap-4">
         <Input
@@ -121,20 +170,30 @@ const PurchaseOrderForm = ({
           label="Order Date"
           type="date"
           value={orderDate}
-          onChange={(e) => setOrderDate(e.target.value)}
+          name="orderDate"
+          onChange={handleInputChange(
+            (e) => setOrderDate(e.target.value),
+            'orderDate'
+          )}
           containerClassName="flex-1"
           disabled={isLoading || isEdit}
           required
+          error={getInputError('orderDate')}
         />
         <Input
           id="expectedDeliveryDate"
           label="Expected Delivery Date"
           type="date"
           value={expectedDeliveryDate}
-          onChange={(e) => setExpectedDeliveryDate(e.target.value)}
+          name="expectedDeliveryDate"
+          onChange={handleInputChange(
+            (e) => setExpectedDeliveryDate(e.target.value),
+            'expectedDeliveryDate'
+          )}
           containerClassName="flex-1"
           disabled={isLoading}
           required
+          error={getInputError('expectedDeliveryDate')}
         />
       </div>
       <div>
@@ -160,9 +219,16 @@ const PurchaseOrderForm = ({
                   id={`itemId-${idx}`}
                   label={isFirst ? 'Item' : ''}
                   value={item.itemId}
-                  onChange={(e) =>
-                    handleLineItemChange(idx, 'itemId', Number(e.target.value))
-                  }
+                  name={`itemId-${idx}`}
+                  onChange={handleInputChange(
+                    (e) =>
+                      handleLineItemChange(
+                        idx,
+                        'itemId',
+                        Number(e.target.value)
+                      ),
+                    `itemId-${idx}`
+                  )}
                   options={selectOptions}
                   required
                   disabled={isLoading || isItemsLoading || isEdit}
@@ -173,24 +239,35 @@ const PurchaseOrderForm = ({
                   type="number"
                   min={1}
                   value={item.quantity}
-                  onChange={(e) =>
-                    handleLineItemChange(
-                      idx,
-                      'quantity',
-                      Number(e.target.value)
-                    )
-                  }
+                  name={`quantity-${idx}`}
+                  onChange={handleInputChange(
+                    (e) =>
+                      handleLineItemChange(
+                        idx,
+                        'quantity',
+                        Number(e.target.value)
+                      ),
+                    `quantity-${idx}`
+                  )}
                   required
                   inputClassName="w-20"
                   disabled={isLoading}
+                  error={getInputError(`quantity-${idx}`)}
                 />
                 <DollarInput
                   id={`unitCost-${idx}`}
                   label={isFirst ? 'Unit Cost' : ''}
                   value={item.unitCost}
-                  onChange={(val) =>
-                    handleLineItemChange(idx, 'unitCost', val === '' ? 0 : val)
-                  }
+                  name={`unitCost-${idx}`}
+                  onChange={handleInputChange(
+                    (val) =>
+                      handleLineItemChange(
+                        idx,
+                        'unitCost',
+                        val === '' ? 0 : val
+                      ),
+                    `unitCost-${idx}`
+                  )}
                   required
                   inputClassName="w-28"
                   disabled={isLoading}
@@ -234,7 +311,7 @@ const PurchaseOrderForm = ({
           type="submit"
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           aria-label={mode === 'new' ? 'Create Purchase Order' : 'Save Changes'}
-          disabled={isLoading}
+          disabled={isLoading || !isFormValid}
         >
           {isLoading ? 'Saving...' : mode === 'new' ? 'Create' : 'Save'}
         </button>
